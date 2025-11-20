@@ -47,8 +47,9 @@ body::-webkit-scrollbar {
 #app {
     position: relative;
     width: 100%;
-    height: 100vh; /* Fixed height to viewport */
-    overflow: hidden; /* Prevent body scroll */
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
+    overflow: hidden;
 }
 
 /* Ambient Background */
@@ -126,20 +127,23 @@ body::-webkit-scrollbar {
 
 /* Section 1: Gateway */
 #gateway {
-    height: 100%; /* Fill #app */
-    overflow: hidden; /* No scroll allowed */
+    height: 100%;
+    overflow: hidden;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* background: radial-gradient(circle at 50% 50%, #1a2a4a 0%, var(--color-bg-dark) 70%); */
     text-align: center;
     padding: 20px;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1;
 }
 
 .logo-area h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
     margin-bottom: 0.5rem;
 }
@@ -153,9 +157,9 @@ body::-webkit-scrollbar {
 }
 
 .logo-area p {
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
     color: var(--color-text-muted);
-    margin-bottom: 3rem;
+    margin-bottom: clamp(1.5rem, 4vh, 3rem);
 }
 
 .choice-deck {
@@ -224,43 +228,56 @@ body::-webkit-scrollbar {
 @media (max-width: 768px) {
     .choice-deck {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
+        padding: 0 1rem;
     }
 
     .card-3d {
         width: 100%;
-        max-width: 320px;
-        height: 120px;
-        /* Horizontal cards on mobile */
+        max-width: 100%;
+        height: 100px;
     }
 
     .card-inner {
         flex-direction: row;
         justify-content: flex-start;
-        padding: 1.5rem;
-        gap: 1.5rem;
+        padding: 1rem;
+        gap: 1rem;
     }
 
     .card-front .icon {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin-bottom: 0;
     }
 
-    .logo-area h1 {
-        font-size: 2rem;
+    .card-front h2 {
+        font-size: 1.2rem;
+    }
+
+    .card-front p {
+        font-size: 0.8rem;
     }
 }
 
 /* Section 2: The Ascent (Form) */
 #ascent {
-    height: 100%; /* Fill #app */
-    overflow-y: auto; /* Scroll only if content overflows */
-    /* background: linear-gradient(to bottom, #0a0e17, #111b2b); */
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
-    position: relative;
+    padding: clamp(1rem, 3vw, 2rem);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#ascent::-webkit-scrollbar {
+    display: none;
 }
 
 .ascent-header {
@@ -289,10 +306,11 @@ body::-webkit-scrollbar {
     width: 100%;
     margin: 0 auto;
     z-index: 2;
+    padding: 0 clamp(0.5rem, 2vw, 1rem);
 }
 
 .form-group {
-    margin-bottom: 1.2rem;
+    margin-bottom: clamp(0.8rem, 2vh, 1.2rem);
     position: relative;
 }
 
@@ -300,7 +318,7 @@ body::-webkit-scrollbar {
     display: block;
     margin-bottom: 0.3rem;
     color: var(--color-text-muted);
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .form-group input,
@@ -308,10 +326,10 @@ body::-webkit-scrollbar {
     width: 100%;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.8rem;
+    padding: clamp(0.6rem, 2vw, 0.8rem);
     border-radius: 8px;
     color: white;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 2vw, 1rem);
     transition: all 0.3s;
 }
 
@@ -348,15 +366,15 @@ body::-webkit-scrollbar {
 
 .cta-btn {
     width: 100%;
-    padding: 1rem;
+    padding: clamp(0.8rem, 2vh, 1rem);
     background: linear-gradient(to right, var(--color-primary), #2980b9);
     border: none;
     border-radius: 8px;
     color: white;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
     font-weight: 600;
     cursor: pointer;
-    margin-top: 2rem;
+    margin-top: clamp(1rem, 3vh, 2rem);
     transition: transform 0.2s;
 }
 
@@ -367,13 +385,15 @@ body::-webkit-scrollbar {
 
 /* Section 3: Analysis (Animation) */
 #analysis {
-    height: 100%; /* Fill #app */
-    overflow: hidden; /* No scroll allowed */
+    height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background: #000; */
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1;
 }
 
@@ -441,13 +461,22 @@ body::-webkit-scrollbar {
 
 /* Section 4: Summit (Dashboard) */
 #summit {
-    height: 100%; /* Fill #app */
-    overflow-y: auto; /* Scroll only if content overflows */
-    /* background: radial-gradient(circle at top, #1a2a4a, #0a0e17); */
-    padding: 1rem;
-    padding-top: 80px; /* Ensure content starts at the top */
-    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: clamp(1rem, 3vw, 2rem);
+    padding-top: clamp(60px, 10vh, 80px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#summit::-webkit-scrollbar {
+    display: none;
 }
 
 .summit-content {
@@ -461,9 +490,9 @@ body::-webkit-scrollbar {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2rem;
-    border-radius: 20px;
-    margin-bottom: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    border-radius: clamp(15px, 3vw, 20px);
+    margin-bottom: clamp(1.5rem, 3vh, 2rem);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
@@ -473,11 +502,12 @@ body::-webkit-scrollbar {
 }
 
 .big-number {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
     font-weight: 800;
     margin: 1rem 0;
     color: white;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    word-break: break-all;
 }
 
 .currency {
@@ -500,12 +530,17 @@ body::-webkit-scrollbar {
 }
 
 .lender-card {
-    min-width: 200px;
+    min-width: clamp(150px, 30vw, 200px);
     background: #16213e;
-    padding: 1.5rem;
+    padding: clamp(1rem, 3vw, 1.5rem);
     border-radius: 12px;
     text-align: center;
     transition: transform 0.3s;
+}
+
+.lender-card h4 {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    margin-bottom: 0.5rem;
 }
 
 .lender-card:hover {
@@ -523,12 +558,13 @@ body::-webkit-scrollbar {
 }
 
 .trust-badges {
-    margin-top: 3rem;
+    margin-top: clamp(1.5rem, 4vh, 3rem);
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: clamp(1rem, 4vw, 2rem);
     color: var(--color-text-muted);
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    flex-wrap: wrap;
 }
 
 /* Tech Grid Background */
