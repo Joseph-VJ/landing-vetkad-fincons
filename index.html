@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetKad Unified Lending Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Main Container -->
+    <main id="app">
+        <div class="ambient-background">
+            <div class="tech-grid"></div>
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+
+        <!-- Section 1: The Gateway (Landing) -->
+        <section id="gateway" class="active-section">
+            <div class="gateway-content">
+                <div class="logo-area">
+                    <h1>VetKad <span class="highlight">Unified</span></h1>
+                    <p>Find the Perfect Loan for You</p>
+                </div>
+
+                <div class="choice-deck">
+                    <!-- Card A: Personal -->
+                    <div class="card-3d" data-path="personal" onclick="app.selectPath('personal')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <i class="fa-solid fa-user-tie icon"></i>
+                                <h2>Salaried</h2>
+                                <p>Personal Loan</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card B: Business -->
+                    <div class="card-3d" data-path="business" onclick="app.selectPath('business')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <i class="fa-solid fa-briefcase icon"></i>
+                                <h2>Business</h2>
+                                <p>Owner / Self-Employed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card C: Instant -->
+                    <div class="card-3d" data-path="instant" onclick="app.selectPath('instant')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <i class="fa-solid fa-bolt icon"></i>
+                                <h2>Quick Cash</h2>
+                                <p>Instant Loan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Ascent (Dynamic Form) -->
+        <section id="ascent" class="hidden-section">
+            <div class="ascent-header">
+                <button class="back-btn" onclick="app.goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <h2 id="form-title">Your Details</h2>
+            </div>
+            <div class="form-container">
+                <form id="loan-form" action="https://api.web3forms.com/submit" method="POST"
+                    onsubmit="app.submitForm(event)" autocomplete="off">
+                    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                    <!-- Dynamic Questions injected here -->
+                    <div id="dynamic-fields"></div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="cta-btn">Check Eligibility <i
+                                class="fa-solid fa-arrow-up"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="background-fx"></div>
+        </section>
+
+        <!-- Section 3: The Analysis (Trust Animation) -->
+        <section id="analysis" class="hidden-section">
+            <div class="analysis-container">
+                <div class="lock-assembly">
+                    <div class="lock-ring ring-1"></div>
+                    <div class="lock-ring ring-2"></div>
+                    <div class="lock-core"><i class="fa-solid fa-shield-halved"></i></div>
+                </div>
+                <h3 id="analysis-text">Analyzing Profile...</h3>
+            </div>
+        </section>
+
+        <!-- Section 4: The Summit (Dashboard) -->
+        <section id="summit" class="hidden-section">
+            <div class="summit-content">
+                <div class="confetti-container"></div>
+                <div class="offer-card">
+                    <div class="offer-header">
+                        <h2>Congratulations!</h2>
+                        <p>You are eligible for up to</p>
+                    </div>
+                    <div class="big-number">
+                        <span class="currency">₹</span>
+                        <span id="loan-amount">0</span>
+                    </div>
+                    <p class="sub-text">Based on your profile</p>
+                </div>
+
+                <div class="lender-section">
+                    <h3>Matched Lenders</h3>
+                    <div class="lender-carousel" id="lender-list">
+                        <!-- Lender Cards injected here -->
+                    </div>
+                </div>
+
+                <div class="trust-badges">
+                    <span><i class="fa-solid fa-lock"></i> SSL Secure</span>
+                    <span><i class="fa-solid fa-building-columns"></i> RBI Registered</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
