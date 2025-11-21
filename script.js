@@ -1,3 +1,6 @@
+const SUPABASE_URL = "https://icammcswodhsjmthwwwh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljYW1tY3N3b2Roc2ptdGh3d3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MjIyODcsImV4cCI6MjA3OTI5ODI4N30.4P3iQXWGIpIhp-vk3ijOk9E64SBurByCQxTvdttATrc";
+
 const app = {
     state: {
         path: null, // 'personal', 'business', 'instant'
@@ -231,14 +234,7 @@ const app = {
         const messages = ["Analyzing Profile...", "Checking Bureau Score...", "Matching with Lenders..."];
         let tl = gsap.timeline({
             onComplete: () => {
-                // Ensure calculateLoan is called even if timeline has issues
-                try {
-                    app.calculateLoan();
-                } catch (e) {
-                    console.error("Calculation Error:", e);
-                    // Fallback to show something if calculation fails
-                    app.showSummit(0);
-                }
+                app.checkEligibility();
             }
         });
 
@@ -253,100 +249,74 @@ const app = {
         });
     },
 
-    calculateLoan: () => {
+    checkEligibility: async () => {
         try {
             const data = app.state.formData;
             const path = app.state.path;
-            let loanAmount = 0;
-            let eligible = false;
-            let reason = "";
+            
+            console.log("Checking Eligibility for:", path, data);
 
-            console.log("Calculating Loan for:", path, data);
+            // Prepare payload for Supabase Edge Function
+            const payload = {
+                loan_type: path,
+                full_name: data.full_name,
+                phone: data.phone,
+                age: parseInt(data.age),
+                monthly_salary: parseFloat(data.monthly_salary) || parseFloat(data.monthly_income),
+                existing_emis: parseFloat(data.current_emis),
+                cibil_score: parseInt(data.cibil_score),
+                salary_mode: data.salary_mode,
+                profession: data.profession,
+                annual_turnover: parseFloat(data.annual_turnover),
+                years_in_business: parseFloat(data.business_years),
+                industry_type: data.industry_type,
+                gst_number: data.gst_number,
+                office_ownership: data.office_ownership,
+                home_ownership: data.home_ownership,
+                desired_amount: parseFloat(data.desired_amount)
+            };
 
-            if (path === 'personal') {
-                const salary = parseFloat(data.monthly_salary);
-                const emis = parseFloat(data.current_emis) || 0;
-                const age = parseInt(data.age);
-                const cibil = parseInt(data.cibil_score);
-                const mode = data.salary_mode;
-                const profession = data.profession;
+            // Call the "Brain" (Edge Function)
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/check-eligibility`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                },
+                body: JSON.stringify(payload)
+            });
 
-                if (salary < 25000) reason = "Income too low";
-                else if (mode === 'Cash' || mode === 'Cheque') reason = "Salary mode invalid";
-                else if (cibil < 700) reason = "Low CIBIL";
-                else if (age < 21 || age > 60) reason = "Age mismatch";
-                else if (emis > (salary * 0.60)) reason = "High FOIR (>60%)";
-                else if (['Police', 'Lawyer', 'Politician', 'Media/Journalist', 'MLM Agent'].includes(profession)) reason = "Negative Profile";
-                else {
-                    loanAmount = salary * 15;
-                    eligible = true;
-                }
-            } else if (path === 'business') {
-                const turnover = parseFloat(data.annual_turnover);
-                const years = parseFloat(data.business_years);
-                const gst = data.gst_number;
-                const industry = data.industry_type;
-                const office = data.office_ownership;
-                const home = data.home_ownership;
-                const bankBal = parseFloat(data.avg_bank_balance) || 0;
+            if (!response.ok) throw new Error("Network response was not ok");
 
-                if (years < 3) reason = "Vintage < 3 Years";
-                else if (turnover < 5000000) reason = "Turnover < 50L";
-                else if (!gst || gst.length < 5) reason = "Invalid GST";
-                else if (office === 'Rented' && home === 'Rented') reason = "No Ownership";
-                else if (['Real Estate', 'Jewellery', 'Liquor', 'Speculation/Trading'].includes(industry)) reason = "Negative Industry";
-                else {
-                    const bankingOffer = bankBal * 15;
-                    let margin = 0.05;
-                    if (industry === 'Service') margin = 0.12;
-                    else if (industry === 'Manufacturing') margin = 0.08;
-                    else if (industry === 'Trading') margin = 0.07;
-                    const gstOffer = turnover * margin;
-                    loanAmount = Math.max(bankingOffer, gstOffer);
-                    eligible = true;
-                }
+            const result = await response.json();
+            console.log("AI Decision:", result);
+
+            if (result.status === 'APPROVED') {
+                app.showSummit(result.approved_amount, result.matched_lender);
             } else {
-                const income = parseFloat(data.monthly_income);
-                const age = parseInt(data.age);
-                if (income > 12000 && age > 21) {
-                    loanAmount = 50000;
-                    eligible = true;
-                } else {
-                    reason = "Instant Loan Criteria Failed";
-                }
-            }
-
-            if (!eligible) {
-                console.log("Rejection Reason:", reason);
+                console.log("Rejected:", result.rejection_reason);
+                // Downgrade Logic: If rejected for Personal/Business, try Instant Loan
                 if (path !== 'instant') {
                     console.log("Downgrading to Instant Loan...");
-                    let income = parseFloat(data.monthly_salary || data.monthly_income || 0);
-
-                    // Fix: Estimate income for business users (10% of turnover / 12 months)
-                    if (path === 'business' && data.annual_turnover) {
-                        income = (parseFloat(data.annual_turnover) * 0.10) / 12;
-                    }
-
-                    const age = parseInt(data.age);
-                    if (income > 12000 && age > 21) {
-                        app.state.path = 'instant';
-                        loanAmount = 50000;
-                        app.showSummit(loanAmount);
-                        return;
-                    }
+                    app.state.path = 'instant';
+                    // Hardcoded fallback for instant loan for now, or could call API again
+                    app.showSummit(25000, "KreditBee (Instant)"); 
+                } else {
+                    app.showSummit(0, "Rejected");
                 }
-                app.state.path = 'instant';
-                loanAmount = 25000;
             }
 
-            app.showSummit(loanAmount);
         } catch (error) {
-            console.error("Critical Error in calculateLoan:", error);
-            app.showSummit(0);
+            console.error("Critical Error in checkEligibility:", error);
+            // Fallback for demo purposes if API keys are missing
+            if (SUPABASE_URL.includes("YOUR_SUPABASE")) {
+                alert("Please configure SUPABASE_URL and KEY in script.js to use the AI Brain!");
+            }
+            app.showSummit(0, "Connection Error");
         }
     },
 
-    showSummit: (amount) => {
+    showSummit: (amount, lenderName) => {
         const analysis = document.getElementById('analysis');
         const summit = document.getElementById('summit');
         const amountEl = document.getElementById('loan-amount');
@@ -371,17 +341,20 @@ const app = {
                         this.targets()[0].innerText = Math.ceil(this.targets()[0].innerText).toLocaleString('en-IN');
                     }
                 });
-                app.renderLenders();
+                app.renderLenders(lenderName);
             }
         });
     },
 
-    renderLenders: () => {
+    renderLenders: (matchedLender) => {
         const list = document.getElementById('lender-list');
         const path = app.state.path;
         let lenders = [];
 
-        if (path === 'instant') {
+        if (matchedLender) {
+            // If AI matched a specific lender, show that one prominently
+            lenders = [{ name: matchedLender, color: '#4CAF50', recommended: true }];
+        } else if (path === 'instant') {
             // Apps for Instant Loans
             lenders = [
                 { name: 'KreditBee', color: '#FFC107' },
@@ -399,9 +372,10 @@ const app = {
         }
 
         list.innerHTML = lenders.map(l => `
-            <div class="lender-card" style="border-top: 4px solid ${l.color}">
+            <div class="lender-card" style="border-top: 4px solid ${l.color}; ${l.recommended ? 'transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2);' : ''}">
+                ${l.recommended ? '<div style="background:#4CAF50; color:white; padding:2px 8px; font-size:12px; border-radius:4px; display:inline-block; margin-bottom:5px;">Recommended</div>' : ''}
                 <h4>${l.name}</h4>
-                <button>Apply</button>
+                <button>Apply Now</button>
             </div>
         `).join('');
     }
