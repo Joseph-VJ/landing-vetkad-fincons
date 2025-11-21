@@ -314,6 +314,20 @@ const app = {
         const analysis = document.getElementById('analysis');
         const summit = document.getElementById('summit');
         const amountEl = document.getElementById('loan-amount');
+        
+        // UI Text Elements
+        const headerTitle = document.querySelector('.offer-header h2');
+        const headerSub = document.querySelector('.offer-header p');
+
+        if (amount === 0) {
+            headerTitle.innerText = "Application Status";
+            headerSub.innerText = "Based on our analysis";
+            amountEl.parentElement.style.color = "#ff4444"; // Red color for 0
+        } else {
+            headerTitle.innerText = "Congratulations!";
+            headerSub.innerText = "You are eligible for up to";
+            amountEl.parentElement.style.color = ""; // Reset color
+        }
 
         gsap.to(analysis, {
             opacity: 0,
@@ -335,17 +349,20 @@ const app = {
                         this.targets()[0].innerText = Math.ceil(this.targets()[0].innerText).toLocaleString('en-IN');
                     }
                 });
-                app.renderLenders(lenderName);
+                app.renderLenders(lenderName, amount);
             }
         });
     },
 
-    renderLenders: (matchedLender) => {
+    renderLenders: (matchedLender, amount) => {
         const list = document.getElementById('lender-list');
         const path = app.state.path;
         let lenders = [];
 
-        if (matchedLender) {
+        if (amount === 0) {
+             // Rejection Case
+             lenders = [{ name: matchedLender, color: '#ff4444', isRejection: true }];
+        } else if (matchedLender) {
             // If AI matched a specific lender, show that one prominently
             lenders = [{ name: matchedLender, color: '#4CAF50', recommended: true }];
         } else if (path === 'instant') {
@@ -368,8 +385,9 @@ const app = {
         list.innerHTML = lenders.map(l => `
             <div class="lender-card" style="border-top: 4px solid ${l.color}; ${l.recommended ? 'transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2);' : ''}">
                 ${l.recommended ? '<div style="background:#4CAF50; color:white; padding:2px 8px; font-size:12px; border-radius:4px; display:inline-block; margin-bottom:5px;">Recommended</div>' : ''}
+                ${l.isRejection ? '<div style="background:#ff4444; color:white; padding:2px 8px; font-size:12px; border-radius:4px; display:inline-block; margin-bottom:5px;">Declined</div>' : ''}
                 <h4>${l.name}</h4>
-                <button>Apply Now</button>
+                ${!l.isRejection ? '<button>Apply Now</button>' : ''}
             </div>
         `).join('');
     }
