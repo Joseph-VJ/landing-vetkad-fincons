@@ -295,15 +295,9 @@ const app = {
                 app.showSummit(result.approved_amount, result.matched_lender);
             } else {
                 console.log("Rejected:", result.rejection_reason);
-                // Downgrade Logic: If rejected for Personal/Business, try Instant Loan
-                if (path !== 'instant') {
-                    console.log("Downgrading to Instant Loan...");
-                    app.state.path = 'instant';
-                    // Hardcoded fallback for instant loan for now, or could call API again
-                    app.showSummit(25000, "KreditBee (Instant)"); 
-                } else {
-                    app.showSummit(0, "Rejected");
-                }
+                // Trust the AI Brain: If rejected, show rejection.
+                // We do NOT blindly downgrade anymore, as that bypasses negative profile checks.
+                app.showSummit(0, result.rejection_reason || "Policy Criteria Not Met");
             }
 
         } catch (error) {
