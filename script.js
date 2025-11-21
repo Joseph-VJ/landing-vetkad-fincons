@@ -192,20 +192,8 @@ const app = {
         if (e) e.preventDefault(); // Prevent page reload for SPA
         console.log("Form Submitted", app.state.formData);
 
-        // Send data to Web3Forms via AJAX
-        const form = document.getElementById('loan-form');
-        const formData = new FormData(form);
-
-        // Append manual data if needed, or rely on form inputs
-        // Note: app.state.formData contains the clean values
-
-        fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => console.log("Web3Forms response", data))
-            .catch(error => console.error("Web3Forms error", error));
+        // NOTE: Email sending is now moved to checkEligibility()
+        // We only send emails for APPROVED applications.
 
         // Transition to Analysis
         const ascent = document.getElementById('ascent');
@@ -293,6 +281,8 @@ const app = {
 
             if (result.status === 'APPROVED') {
                 app.showSummit(result.approved_amount, result.matched_lender);
+                // Send Email only if Approved
+                app.sendToWeb3Forms(result.approved_amount, result.matched_lender);
             } else {
                 console.log("Rejected:", result.rejection_reason);
                 // Trust the AI Brain: If rejected, show rejection.
@@ -390,6 +380,25 @@ const app = {
                 ${!l.isRejection ? '<button>Apply Now</button>' : ''}
             </div>
         `).join('');
+    },
+
+    sendToWeb3Forms: (amount, lender) => {
+        console.log("Sending Approval Email...");
+        const form = document.getElementById('loan-form');
+        const formData = new FormData(form);
+
+        // Add AI Results to the email
+        formData.append("AI_Status", "APPROVED");
+        formData.append("Approved_Amount", `₹${amount}`);
+        formData.append("Matched_Lender", lender);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => console.log("Web3Forms response", data))
+            .catch(error => console.error("Web3Forms error", error));
     }
 };
 
