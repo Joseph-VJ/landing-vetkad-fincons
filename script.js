@@ -324,6 +324,12 @@ const app = {
 // Global function for modal close button
 window.closeModal = () => {
     document.getElementById('result-modal').classList.remove('active');
+    
+    // Re-enable form when modal is closed
+    const form = document.getElementById('eligibility-form');
+    if (form) {
+        Array.from(form.elements).forEach(el => el.disabled = false);
+    }
 };
 
 // Initialize
