@@ -53,6 +53,7 @@ Please perform the following **Test Scenarios** sequentially. For each scenario,
 7.  **Total Outstanding Loans:** 20,00,000 (New Field)
 8.  **CIBIL Score:** 750
 9.  **Profession:** Private Sector
+10. **Pincode:** 600001
 *   **Expected Result:** ❌ **REJECTED**.
 *   **Reason:** High existing EMIs (FOIR exceeded).
 

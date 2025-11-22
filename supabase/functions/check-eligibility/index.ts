@@ -300,10 +300,41 @@ serve(async (req: Request) => {
       salary_mode,
       profession,
       desired_amount,
+      tenure,
+      pincode,
       // Business Loan Fields (Optional)
       annual_turnover,
       years_in_business
     } = await req.json()
+
+    // Input Validation
+    if (!loan_type || !full_name || !phone) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Missing required fields: loan_type, full_name, or phone' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    if (typeof age !== 'number' || age < 18 || age > 100) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid age: must be between 18 and 100' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    if (typeof monthly_salary !== 'number' || monthly_salary < 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid monthly salary: must be a positive number' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    if (typeof cibil_score !== 'number' || (cibil_score !== -1 && cibil_score !== 0 && (cibil_score < 300 || cibil_score > 900))) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid CIBIL score: must be -1, 0, or between 300-900' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
 
     let status = 'REJECTED'
     let matched_lender = ''
@@ -332,8 +363,8 @@ serve(async (req: Request) => {
           if (cibil_score < bank.min_cibil) return false;
         }
 
-        // Salary Mode Check
-        if (!bank.salary_modes_allowed.includes(salary_mode) && salary_mode !== 'Bank Transfer') return false;
+        // Salary Mode Check - reject if mode is NOT in the allowed list
+        if (!bank.salary_modes_allowed.includes(salary_mode)) return false;
 
         // Negative Profile Check
         if (bank.negative_profiles.includes(profession)) return false;
@@ -356,9 +387,9 @@ serve(async (req: Request) => {
             // Loan Amount based on Multiplier
             let loan_amount = monthly_salary * bank.multiplier;
             
-            // Cap loan amount based on EMI capacity (Approximate reverse calc: EMI * 60 months)
+            // Cap loan amount based on EMI capacity (Approximate reverse calc: EMI * tenure months)
             // This is a simplified check to ensure they can afford the EMI
-            const affordability_cap = max_emi * 60; 
+            const affordability_cap = max_emi * (tenure || 60); 
             
             const final_offer = Math.min(loan_amount, affordability_cap);
 
@@ -402,7 +433,7 @@ serve(async (req: Request) => {
         matched_lender,
         approved_amount,
         rejection_reason,
-        raw_data: { desired_amount, total_obligations }
+        raw_data: { desired_amount, total_obligations, tenure, pincode }
       })
 
     if (error) throw error
