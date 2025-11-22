@@ -1,67 +1,44 @@
-# NotebookLM Prompts: PERSONAL LOAN & HOME LOAN (Product Policy Only)
-*Use this file to extract the "Credit Policy" details from your documents.*
+# Google NotebookLM Prompts: Personal Loan Policy Extraction
 
-**Prompt 1: Basic Eligibility Criteria**
-> "Based on the documents, list the **Mandatory Eligibility Criteria** for a Personal Loan. Specifically:
-> 1. Minimum and Maximum Age (at entry and at maturity).
-> 2. Minimum Net Monthly Salary (is it different for Metro vs Non-Metro locations?).
-> 3. Minimum Work Experience (Total years vs. Years in current company).
-> 4. Minimum CIBIL Score required."
+Use these prompts in Google NotebookLM after uploading your lender policy documents. These prompts are designed to extract specific details for each lender to populate your website's logic without assuming specific bank names.
 
-**Prompt 2: Financial Ratios (FOIR)**
-> "Explain the **FOIR (Fixed Obligation to Income Ratio)** calculation logic.
-> 1. What is the maximum allowed FOIR percentage? (e.g., 50%, 60%?)
-> 2. Does the FOIR limit change based on the salary bracket? (e.g., Higher salary = Higher allowed FOIR?)
-> 3. What existing obligations are counted? (Credit card minimum dues, existing EMIs, rent?)"
+## 🎯 Master Comparison Prompt
+> "Create a detailed comparison table for **all lenders** mentioned in the uploaded documents. For each lender, list:
+> 1. **Minimum Net Monthly Salary** (Metro vs Non-Metro)
+> 2. **Minimum CIBIL Score**
+> 3. **Minimum & Maximum Age**
+> 4. **FOIR Limit** (Fixed Obligation to Income Ratio)
+> 5. **Loan Multiplier** (How many times of salary?)
+> 6. **Lowest Interest Rate**
+> 7. **Processing Fee**"
 
-**Prompt 3: Employer Categorization**
-> "How does the **Employer Category** affect the loan?
-> 1. Are companies classified into Categories (e.g., Super A, Cat A, Cat B, Unlisted)?
-> 2. How does the loan multiplier change based on the company category? (e.g., Cat A gets 20x salary, Unlisted gets 10x?)
-> 3. Are there any 'Negative Profiles' or 'Negative Employer Types' that are auto-rejected?"
+## 🏦 Detailed Policy Extraction
+> "For each lender identified in the documents, extract the following specific policy details:
+> - **Salary Classification:** How do they classify companies (e.g., Cat A, Cat B, Unlisted) and does the minimum salary change based on this?
+> - **CIBIL Requirements:** What is the absolute minimum CIBIL score required? Are there exceptions for high salary?
+> - **Special Programs:** Are there any special schemes for government employees, doctors, or high-net-worth individuals?
+> - **Foreclosure Charges:** What are the charges for closing the loan early? Is there a lock-in period?"
 
-**Prompt 4: Home Loan - LTV & Property**
-> "For **Home Loans**, detail the **LTV (Loan to Value)** guidelines:
-> 1. What is the max LTV for loans up to 30 Lakhs?
-> 2. What is the max LTV for loans above 75 Lakhs?
-> 3. What are the restrictions on the property type? (e.g., Gram Panchayat properties, older buildings, resale vs. builder purchase?)"
+## 📊 Financial Logic (FOIR & Multipliers)
+> "Analyze the financial calculation logic for each lender:
+> - **FOIR Calculation:** What is the maximum FOIR allowed? Does it increase with higher salary brackets?
+> - **Multiplier Logic:** What is the standard multiplier applied to the net monthly salary?
+> - **Cash/Cheque Salary:** Do any lenders accept cash or cheque salary modes? If so, what are the conditions?"
 
-**Prompt 5: Home Loan - Income Eligibility**
-> "How is the **Home Loan Eligibility** calculated?
-> 1. Can we include variable pay/incentives in the income calculation?
-> 2. What is the logic for adding a Co-Applicant? Whose income can be clubbed? (Spouse, Parents, Siblings?)
-> 3. What is the maximum tenure allowed?"
+## 🚫 Negative Profiles & Restrictions
+> "List all **Negative Profiles** and restrictions mentioned across the documents:
+> 1. **Restricted Professions:** Which job profiles are explicitly mentioned as negative or restricted?
+> 2. **Employer Restrictions:** Are there rules against funding employees of Proprietorships, Partnerships, or Unlisted companies?
+> 3. **Location Restrictions:** Are there specific negative pincodes or areas mentioned?"
 
-**Prompt 6: Documentation Requirements**
-> "List the **Exact Documents Required** for login.
-> 1. KYC Documents (Is Aadhaar/PAN mandatory?)
-> 2. Income Documents (How many months of Payslips? How many months of Bank Statements?)
-> 3. Property Documents (for Home Loan).
-> 4. Are there any specific formats required (e.g., PDF only)?"
+## 💰 Fees & Charges Summary
+> "Create a summary of **Fees and Charges** for every lender found:
+> - **Processing Fees:** (Percentage and Min/Max caps)
+> - **Foreclosure/Pre-closure Charges:** (Fixed vs Floating rate rules)
+> - **Part-Payment Rules:** Is part-payment allowed? If yes, what are the charges?"
 
-**Prompt 7: Negative Profiles & Locations**
-> "Are there any **Negative Rules** mentioned?
-> 1. List of Negative Pin Codes or Locations.
-> 2. List of Negative Professions (e.g., Lawyers, Police, Journalists - often restricted in lending).
-> 3. Rules for applicants living in PG or Bachelor accommodation."
-
-**Prompt 8: Balance Transfer & Top-Up**
-> "What are the rules for **Balance Transfer (BT)**?
-> 1. Minimum number of EMIs paid on the existing loan.
-> 2. Is a Top-Up loan allowed along with BT? If yes, what is the cap?
-> 3. Is the FOIR calculation different for BT cases?"
-
-**Prompt 9: Fees & Charges**
-> "List the standard **Fees and Charges**:
-> 1. Processing Fee percentage.
-> 2. Pre-payment / Foreclosure charges (Fixed vs Floating rate).
-> 3. Login fees or legal/technical charges for Home Loans."
-
-**Prompt 10: FINAL CONFIGURATION SUMMARY**
-> "Summarize the **Mathematical Rules** into a simple list for me to code:
-> - Min Salary: [Value]
-> - Min CIBIL: [Value]
-> - Max FOIR: [Value]
-> - Max Age: [Value]
-> - Salary Multiplier: [Value]
-> - Max LTV: [Value]"
+## 📄 Documentation & Login Rules
+> "What are the **Login and Documentation Requirements**?
+> - **KYC:** Which lenders accept Video KYC vs Physical KYC?
+> - **Income Proof:** How many months of payslips and bank statements are required for each lender?
+> - **Official Email:** Is official email verification mandatory for all lenders?"

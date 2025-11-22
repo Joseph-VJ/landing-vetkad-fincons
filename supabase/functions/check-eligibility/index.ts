@@ -6,7 +6,263 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+interface BankPolicy {
+  name: string;
+  min_salary: number;
+  min_cibil: number;
+  cibil_0_allowed: boolean; // For -1 or 0 scores
+  min_age: number;
+  max_age: number;
+  foir_limit: number; // 0.65 for 65%
+  multiplier: number; // 20x salary
+  interest_rate: number; // Starting ROI
+  processing_fee: number; // Percentage
+  negative_profiles: string[];
+  salary_modes_allowed: string[];
+}
+
+const BANK_POLICIES: BankPolicy[] = [
+  {
+    name: "Aditya Birla Capital",
+    min_salary: 20000,
+    min_cibil: 700,
+    cibil_0_allowed: true,
+    min_age: 23,
+    max_age: 60,
+    foir_limit: 0.75,
+    multiplier: 20, // Default
+    interest_rate: 13.00, // Est
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Axis Finance",
+    min_salary: 20000, // Rural/Semi-urban base
+    min_cibil: 700,
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.70,
+    multiplier: 30,
+    interest_rate: 10.99,
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Bajaj Finserv",
+    min_salary: 35000, // Growth location base
+    min_cibil: 685,
+    cibil_0_allowed: true, // Bureau No-Hit Program
+    min_age: 23,
+    max_age: 59,
+    foir_limit: 0.70,
+    multiplier: 24, // Max for Prime
+    interest_rate: 15.00,
+    processing_fee: 2.0,
+    negative_profiles: ['Police', 'Lawyer', 'Politician', 'Journalist', 'Driver', 'Security Guard'],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Bandhan Bank",
+    min_salary: 25000,
+    min_cibil: 730,
+    cibil_0_allowed: true,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.60,
+    multiplier: 20, // Default
+    interest_rate: 10.50,
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Chola",
+    min_salary: 20000,
+    min_cibil: 700,
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.65,
+    multiplier: 32,
+    interest_rate: 14.00, // Est
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Finnable",
+    min_salary: 15000, // Tier 2
+    min_cibil: 700,
+    cibil_0_allowed: true, // NTC allowed > 23 age
+    min_age: 21,
+    max_age: 58,
+    foir_limit: 0.60,
+    multiplier: 18, // Est
+    interest_rate: 19.99,
+    processing_fee: 2.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "HDFC Bank",
+    min_salary: 25000,
+    min_cibil: 720, // Default prime
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.65,
+    multiplier: 20, // Default prime
+    interest_rate: 10.75, // Est
+    processing_fee: 1.5,
+    negative_profiles: ['Card Abuse'],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "ICICI Bank",
+    min_salary: 30000, // Default prime
+    min_cibil: 750,
+    cibil_0_allowed: true,
+    min_age: 23,
+    max_age: 58,
+    foir_limit: 0.65,
+    multiplier: 20, // Default prime
+    interest_rate: 10.55,
+    processing_fee: 1.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "IDFC First Bank",
+    min_salary: 20000,
+    min_cibil: 720,
+    cibil_0_allowed: false,
+    min_age: 23,
+    max_age: 60,
+    foir_limit: 0.70,
+    multiplier: 20, // Default
+    interest_rate: 11.50, // Est
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "InCred",
+    min_salary: 20000, // Salaried implied
+    min_cibil: 700,
+    cibil_0_allowed: false,
+    min_age: 23,
+    max_age: 60,
+    foir_limit: 0.50, // Strict
+    multiplier: 15, // Est
+    interest_rate: 18.99,
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Kotak Mahindra Bank",
+    min_salary: 25000,
+    min_cibil: 700,
+    cibil_0_allowed: true,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.75,
+    multiplier: 32,
+    interest_rate: 10.99,
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "MAS Finance",
+    min_salary: 18000,
+    min_cibil: 700,
+    cibil_0_allowed: true,
+    min_age: 21,
+    max_age: 58,
+    foir_limit: 0.60,
+    multiplier: 15, // FOIR based
+    interest_rate: 18.00,
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Muthoot",
+    min_salary: 25000,
+    min_cibil: 675,
+    cibil_0_allowed: true,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.65,
+    multiplier: 18, // Est
+    interest_rate: 14.00, // Est
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Piramal Finance",
+    min_salary: 25000, // Default
+    min_cibil: 743, // V6-V20
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.75,
+    multiplier: 20, // No multiplier calc, use FOIR
+    interest_rate: 11.99,
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Poonawala Fincorp",
+    min_salary: 30000,
+    min_cibil: 700,
+    cibil_0_allowed: true,
+    min_age: 21,
+    max_age: 60,
+    foir_limit: 0.80,
+    multiplier: 20, // Default
+    interest_rate: 11.50, // Est
+    processing_fee: 2.0,
+    negative_profiles: ['Lawyer', 'Police', 'DSA'],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "Tata Capital",
+    min_salary: 25000,
+    min_cibil: 725,
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 58,
+    foir_limit: 0.75,
+    multiplier: 27,
+    interest_rate: 11.25, // Est
+    processing_fee: 1.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
+    name: "WeRize",
+    min_salary: 12000,
+    min_cibil: 650, // Scorecard based
+    cibil_0_allowed: false,
+    min_age: 21,
+    max_age: 57,
+    foir_limit: 0.58,
+    multiplier: 12, // Est low ticket
+    interest_rate: 20.00, // Est
+    processing_fee: 2.5,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer', 'IMPS']
+  }
+];
+
+serve(async (req: Request) => {
   // Handle CORS (Browser security)
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -28,120 +284,88 @@ serve(async (req) => {
       cibil_score,
       salary_mode,
       profession,
+      desired_amount,
+      // Business Loan Fields (Optional)
       annual_turnover,
-      years_in_business,
-      industry_type,
-      gst_number,
-      office_ownership,
-      home_ownership,
-      desired_amount
+      years_in_business
     } = await req.json()
 
     let status = 'REJECTED'
     let matched_lender = ''
     let approved_amount = 0
     let rejection_reason = ''
+    let best_offer_roi = 0
 
     // ==========================================
     // 🧠 LOGIC ENGINE START
     // ==========================================
 
     if (loan_type === 'personal') {
-      // --- PERSONAL LOAN RULES ---
-      const MIN_SALARY = 25000
-      const MIN_CIBIL = 720
-      const FOIR_LIMIT = 0.65 // 65%
-      const MULTIPLIER = 20
-      const MIN_AGE = 21
-      const MAX_AGE = 60
-      const NEGATIVE_PROFESSIONS = ['Police', 'Lawyer', 'Politician', 'Media/Journalist', 'MLM Agent']
-      const INVALID_SALARY_MODES = ['Cash', 'Cheque']
-
-      if (monthly_salary < MIN_SALARY) {
-        rejection_reason = `Salary below minimum ₹${MIN_SALARY}`
-      } else if (cibil_score < MIN_CIBIL) {
-        rejection_reason = `CIBIL score below ${MIN_CIBIL}`
-      } else if (age < MIN_AGE || age > MAX_AGE) {
-        rejection_reason = `Age ${age} is outside eligible range (${MIN_AGE}-${MAX_AGE})`
-      } else if (INVALID_SALARY_MODES.includes(salary_mode)) {
-        rejection_reason = `Salary mode '${salary_mode}' not accepted (Bank Transfer required)`
-      } else if (NEGATIVE_PROFESSIONS.includes(profession)) {
-        rejection_reason = `Profession '${profession}' is in negative profile list`
-      } else {
-        // Calculate Disposable Income
-        const max_emi_capacity = (monthly_salary * FOIR_LIMIT) - (existing_emis || 0)
+      
+      // 1. Filter Eligible Banks
+      const eligible_banks = BANK_POLICIES.filter(bank => {
+        // Salary Check
+        if (monthly_salary < bank.min_salary) return false;
         
-        if (max_emi_capacity <= 0) {
-          rejection_reason = 'High existing EMIs (FOIR exceeded)'
+        // Age Check
+        if (age < bank.min_age || age > bank.max_age) return false;
+
+        // CIBIL Check
+        if (cibil_score === -1 || cibil_score === 0) {
+          if (!bank.cibil_0_allowed) return false;
         } else {
-          status = 'APPROVED'
-          // Calculate Loan Amount
-          approved_amount = Math.round(max_emi_capacity * MULTIPLIER)
+          if (cibil_score < bank.min_cibil) return false;
+        }
+
+        // Salary Mode Check
+        if (!bank.salary_modes_allowed.includes(salary_mode) && salary_mode !== 'Bank Transfer') return false;
+
+        // Negative Profile Check
+        if (bank.negative_profiles.includes(profession)) return false;
+
+        return true;
+      });
+
+      if (eligible_banks.length === 0) {
+        rejection_reason = "No lenders matched your profile (Salary/CIBIL/Age criteria not met)";
+      } else {
+        // 2. Calculate Loan Amount for Each Eligible Bank
+        let best_bank = null;
+        let max_loan_possible = 0;
+
+        for (const bank of eligible_banks) {
+          // FOIR Calculation
+          const max_emi = (monthly_salary * bank.foir_limit) - (existing_emis || 0);
           
-          // Bank Matching Logic
-          if (monthly_salary >= 50000 && cibil_score >= 750) {
-            matched_lender = 'HDFC Bank (Prime)'
-          } else if (monthly_salary >= 35000) {
-            matched_lender = 'Bajaj Finserv'
-          } else {
-            matched_lender = 'KreditBee / MoneyView'
+          if (max_emi > 0) {
+            // Loan Amount based on Multiplier
+            let loan_amount = monthly_salary * bank.multiplier;
+            
+            // Cap loan amount based on EMI capacity (Approximate reverse calc: EMI * 60 months)
+            // This is a simplified check to ensure they can afford the EMI
+            const affordability_cap = max_emi * 60; 
+            
+            const final_offer = Math.min(loan_amount, affordability_cap);
+
+            if (final_offer > max_loan_possible) {
+              max_loan_possible = final_offer;
+              best_bank = bank;
+            }
           }
         }
-      }
 
-    } else if (loan_type === 'business') {
-      // --- BUSINESS LOAN RULES ---
-      const MIN_TURNOVER = 1200000 // 12 Lakhs (Platform Min)
-      const PRIME_TURNOVER = 10000000 // 1 Crore (Prime Min)
-      const MIN_VINTAGE = 1 // 1 Year
-      const PRIME_VINTAGE = 3 // 3 Years
-      const PROFIT_MARGIN = 0.08 // 8%
-      const NEGATIVE_INDUSTRIES = ['Real Estate', 'Jewellery', 'Liquor', 'Speculation/Trading']
-      const GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
-
-      if (annual_turnover < MIN_TURNOVER) {
-        rejection_reason = `Turnover below minimum ₹12L`
-      } else if (years_in_business < MIN_VINTAGE) {
-        rejection_reason = `Business vintage below ${MIN_VINTAGE} year`
-      } else if (NEGATIVE_INDUSTRIES.includes(industry_type)) {
-        rejection_reason = `Industry '${industry_type}' is in negative list`
-      } else if (!gst_number || !GST_REGEX.test(gst_number)) {
-        rejection_reason = 'Invalid or missing GST number'
-      } else if (office_ownership === 'Rented' && home_ownership === 'Rented') {
-        rejection_reason = 'Both office and residence are rented (stability concern)'
-      } else {
-        status = 'APPROVED'
-        
-        // Calculate Estimated Monthly Income
-        const estimated_monthly_income = (annual_turnover * PROFIT_MARGIN) / 12
-        // Apply Personal Loan Multiplier logic to estimated income
-        approved_amount = Math.round(estimated_monthly_income * 15) // 15x for Business
-
-        // Bank Matching Logic
-        if (annual_turnover >= PRIME_TURNOVER && years_in_business >= PRIME_VINTAGE) {
-          matched_lender = 'HDFC / ICICI (Prime Business)'
-        } else if (annual_turnover >= 5000000) {
-          matched_lender = 'Bajaj Finserv / IDFC'
+        if (max_loan_possible > 0 && best_bank) {
+          status = 'APPROVED';
+          approved_amount = Math.round(max_loan_possible);
+          matched_lender = best_bank.name;
+          best_offer_roi = best_bank.interest_rate;
         } else {
-          matched_lender = 'LendingKart / Protium'
+          rejection_reason = "High existing EMIs (FOIR exceeded for all eligible banks)";
         }
       }
-    } else if (loan_type === 'instant') {
-      // --- INSTANT LOAN (QUICK CASH) RULES ---
-      // Default conservative rules since specific data wasn't provided
-      const MIN_INCOME = 15000
-      const MIN_AGE = 21
-      
-      if (monthly_salary < MIN_INCOME) {
-        rejection_reason = `Income below ₹${MIN_INCOME} for Instant Loan`
-      } else if (age < MIN_AGE) {
-        rejection_reason = `Age below ${MIN_AGE}`
-      } else {
-        status = 'APPROVED'
-        matched_lender = 'KreditBee / CASHe'
-        // Instant loans usually cap at 50k-1L for new users
-        approved_amount = Math.min(monthly_salary * 1.5, 50000) 
-      }
+
+    } else {
+      rejection_reason = "Invalid Loan Type"
     }
 
     // ==========================================
