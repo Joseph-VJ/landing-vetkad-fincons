@@ -31,6 +31,7 @@ const app = {
         const salary_mode = document.getElementById('salary_mode').value;
         const profession = document.getElementById('profession').value;
         const emis = parseFloat(document.getElementById('emis').value) || 0;
+        const obligations = parseFloat(document.getElementById('obligations').value) || 0;
 
         const payload = {
             loan_type: 'personal',
@@ -39,6 +40,7 @@ const app = {
             age,
             monthly_salary: salary,
             existing_emis: emis,
+            total_obligations: obligations,
             cibil_score: cibil,
             salary_mode,
             profession,

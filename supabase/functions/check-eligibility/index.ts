@@ -281,6 +281,7 @@ serve(async (req: Request) => {
       age,
       monthly_salary, 
       existing_emis, 
+      total_obligations,
       cibil_score,
       salary_mode,
       profession,
@@ -387,7 +388,7 @@ serve(async (req: Request) => {
         matched_lender,
         approved_amount,
         rejection_reason,
-        raw_data: { desired_amount }
+        raw_data: { desired_amount, total_obligations }
       })
 
     if (error) throw error
