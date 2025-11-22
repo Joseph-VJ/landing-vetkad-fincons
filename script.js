@@ -39,74 +39,69 @@ const app = {
         if (btn.disabled) return;
         
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
-        btn.disabled = true;
-
-        // Disable form to prevent changes during submission
         const form = document.getElementById('eligibility-form');
-        if (form) {
-            Array.from(form.elements).forEach(el => {
-                if (el !== btn) el.disabled = true;
-            });
-        }
-
-        const amount = parseFloat(document.getElementById('amount').value);
-        const tenure = parseFloat(document.getElementById('tenure').value); 
-        const salary = parseFloat(document.getElementById('salary').value);
-        const cibil = parseFloat(document.getElementById('cibil').value);
-        const full_name = document.getElementById('full_name').value;
-        const phone = document.getElementById('phone').value;
-        const age = parseInt(document.getElementById('age').value);
-        const salary_mode = document.getElementById('salary_mode').value;
-        const profession = document.getElementById('profession').value;
-        const emis = parseFloat(document.getElementById('emis').value) || 0;
-        const obligations = parseFloat(document.getElementById('obligations').value) || 0;
-        const pincode = document.getElementById('pincode').value;
-
-        // Validate phone number
-        if (!/^[6-9]\d{9}$/.test(phone)) {
-            alert('Please enter a valid 10-digit Indian mobile number starting with 6-9');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            if (form) Array.from(form.elements).forEach(el => el.disabled = false);
-            return;
-        }
-
-        // Validate pincode
-        if (!/^\d{6}$/.test(pincode)) {
-            alert('Please enter a valid 6-digit pincode');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            if (form) Array.from(form.elements).forEach(el => el.disabled = false);
-            return;
-        }
-
-        // Validate CIBIL score
-        if (cibil !== -1 && cibil !== 0 && (cibil < 300 || cibil > 900)) {
-            alert('CIBIL Score must be between 300-900, or 0 for new-to-credit, or -1 for no bureau');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            if (form) Array.from(form.elements).forEach(el => el.disabled = false);
-            return;
-        }
-
-        const payload = {
-            loan_type: 'personal',
-            full_name,
-            phone,
-            age,
-            monthly_salary: salary,
-            existing_emis: emis,
-            total_obligations: obligations,
-            cibil_score: cibil,
-            salary_mode,
-            profession,
-            desired_amount: amount,
-            tenure: tenure,
-            pincode: pincode
-        };
 
         try {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            btn.disabled = true;
+
+            // Disable form to prevent changes during submission
+            if (form) {
+                Array.from(form.elements).forEach(el => {
+                    if (el !== btn) el.disabled = true;
+                });
+            }
+
+            // Safely get values with null checks
+            const getVal = (id) => document.getElementById(id)?.value || '';
+            
+            const amount = parseFloat(getVal('amount')) || 0;
+            const tenure = parseFloat(getVal('tenure')) || 0; 
+            const salary = parseFloat(getVal('salary')) || 0;
+            const cibil = parseFloat(getVal('cibil')) || 0;
+            const full_name = getVal('full_name');
+            const phone = getVal('phone');
+            const age = parseInt(getVal('age')) || 0;
+            const salary_mode = getVal('salary_mode');
+            const profession = getVal('profession');
+            const emis = parseFloat(getVal('emis')) || 0;
+            const obligations = parseFloat(getVal('obligations')) || 0;
+            const pincode = getVal('pincode');
+
+            // Validate phone number
+            if (!/^[6-9]\d{9}$/.test(phone)) {
+                alert('Please enter a valid 10-digit Indian mobile number starting with 6-9');
+                return; // finally block will handle re-enabling
+            }
+
+            // Validate pincode
+            if (!/^\d{6}$/.test(pincode)) {
+                alert('Please enter a valid 6-digit pincode');
+                return;
+            }
+
+            // Validate CIBIL score
+            if (cibil !== -1 && cibil !== 0 && (cibil < 300 || cibil > 900)) {
+                alert('CIBIL Score must be between 300-900, or 0 for new-to-credit, or -1 for no bureau');
+                return;
+            }
+
+            const payload = {
+                loan_type: 'personal',
+                full_name,
+                phone,
+                age,
+                monthly_salary: salary,
+                existing_emis: emis,
+                total_obligations: obligations,
+                cibil_score: cibil,
+                salary_mode,
+                profession,
+                desired_amount: amount,
+                tenure: tenure,
+                pincode: pincode
+            };
+
             // Use environment-based configuration (secure approach)
             const SUPABASE_URL = window.SUPABASE_URL || "https://icammcswodhsjmthwwwh.supabase.co";
             const SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljYW1tY3N3b2Roc2ptdGh3d3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MjIyODcsImV4cCI6MjA3OTI5ODI4N30.4P3iQXWGIpIhp-vk3ijOk9E64SBurByCQxTvdttATrc";
@@ -134,11 +129,9 @@ const app = {
 
             if (result.status === 'APPROVED') {
                 app.showModal('success', result);
-                // For QA Automation: Log result to console
                 console.log('QA_RESULT:', JSON.stringify(result));
             } else {
                 app.showModal('fail', result);
-                // For QA Automation: Log result to console
                 console.log('QA_RESULT:', JSON.stringify(result));
             }
         } catch (error) {
@@ -324,12 +317,6 @@ const app = {
 // Global function for modal close button
 window.closeModal = () => {
     document.getElementById('result-modal').classList.remove('active');
-    
-    // Re-enable form when modal is closed
-    const form = document.getElementById('eligibility-form');
-    if (form) {
-        Array.from(form.elements).forEach(el => el.disabled = false);
-    }
 };
 
 // Initialize
