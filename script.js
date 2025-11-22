@@ -1,6 +1,15 @@
 const app = {
     init: () => {
         console.log("VetKad Fincons Initialized");
+        
+        // Force enable all form fields on load (fixes browser cache/restore issues)
+        const form = document.getElementById('eligibility-form');
+        if (form) {
+            Array.from(form.elements).forEach(el => el.disabled = false);
+        }
+        const btn = document.querySelector('.btn-primary');
+        if (btn) btn.disabled = false;
+
         app.setupCalculators();
         app.setupForm();
         app.setupModalBackdrop();
