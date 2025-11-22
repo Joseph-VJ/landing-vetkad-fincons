@@ -1,6 +1,14 @@
 const app = {
     init: () => {
         console.log("VetKad Fincons Initialized");
+        
+        // Force display:none on modal at start
+        const modal = document.getElementById('result-modal');
+        if(modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+        
         app.enableFormFields();
         app.setupCalculators();
         app.setupForm();
@@ -236,6 +244,8 @@ const app = {
             qaResultDiv.setAttribute('data-error', data?.error_message || 'Unknown error');
         }
 
+        // Show modal with display:flex
+        modal.style.display = '';
         modal.classList.add('active');
     },
 
@@ -318,7 +328,11 @@ const app = {
 
 // Global function for modal close button
 window.closeModal = () => {
-    document.getElementById('result-modal').classList.remove('active');
+    const modal = document.getElementById('result-modal');
+    if(modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
 };
 
 // Initialize

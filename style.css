@@ -104,6 +104,7 @@ body {
     padding: 4rem 0 6rem;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 /* Background decoration */
@@ -116,6 +117,7 @@ body {
     height: 600px;
     background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(10, 37, 64, 0.05));
     border-radius: 50%;
+    z-index: -1;
     pointer-events: none;
 }
 
@@ -125,7 +127,7 @@ body {
     gap: 4rem;
     align-items: center;
     position: relative;
-    z-index: 100;
+    z-index: 5;
 }
 
 .hero-text h1 {
@@ -175,7 +177,7 @@ body {
 .hero-form {
     perspective: 1000px;
     position: relative;
-    z-index: 200;
+    z-index: 50;
 }
 
 .form-card {
@@ -238,7 +240,12 @@ input, select {
     background: #FAFBFC;
     pointer-events: auto;
     position: relative;
-    z-index: 1;
+    z-index: 60;
+    cursor: text;
+}
+
+select {
+    cursor: pointer;
 }
 
 input:focus, select:focus {
@@ -268,6 +275,9 @@ input::placeholder {
     justify-content: center;
     align-items: center;
     gap: 10px;
+    position: relative;
+    z-index: 60;
+    pointer-events: auto;
 }
 
 .btn-primary:hover {
@@ -282,6 +292,7 @@ input::placeholder {
 
 /* --- Result Modal --- */
 .modal-overlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -289,20 +300,13 @@ input::placeholder {
     height: 100%;
     background: rgba(10, 37, 64, 0.6);
     backdrop-filter: blur(4px);
-    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: var(--transition);
 }
 
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    display: flex;
 }
 
 .result-card {
@@ -313,12 +317,6 @@ input::placeholder {
     max-width: 450px;
     width: 90%;
     box-shadow: var(--shadow-lg);
-    transform: scale(0.9);
-    transition: var(--transition);
-}
-
-.modal-overlay.active .result-card {
-    transform: scale(1);
 }
 
 .result-icon {
