@@ -177,6 +177,20 @@ const BANK_POLICIES: BankPolicy[] = [
     salary_modes_allowed: ['Bank Transfer']
   },
   {
+    name: "L&T Finance",
+    min_salary: 25000, // 35k for Mumbai, 25k for others
+    min_cibil: 700,
+    cibil_0_allowed: false,
+    min_age: 23, // Standard assumption
+    max_age: 58, // Standard assumption
+    foir_limit: 0.70, // Avg of 55-80% based on segments
+    multiplier: 18, // Base multiplier for Others/Cat C
+    interest_rate: 12.50, // Starting for >750 CIBIL
+    processing_fee: 2.0,
+    negative_profiles: [],
+    salary_modes_allowed: ['Bank Transfer']
+  },
+  {
     name: "MAS Finance",
     min_salary: 18000,
     min_cibil: 700,
