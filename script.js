@@ -64,8 +64,12 @@ const app = {
 
             if (result.status === 'APPROVED') {
                 app.showModal('success', result);
+                // For QA Automation: Log result to console
+                console.log('QA_RESULT:', JSON.stringify(result));
             } else {
                 app.showModal('fail', result);
+                // For QA Automation: Log result to console
+                console.log('QA_RESULT:', JSON.stringify(result));
             }
         } catch (error) {
             console.error(error);
@@ -77,6 +81,16 @@ const app = {
     },
 
     showModal: (type, data) => {
+        // For QA Automation: Create visible result display on page
+        const formCard = document.querySelector('.form-card');
+        let qaResultDiv = document.getElementById('qa-result-display');
+        if (!qaResultDiv) {
+            qaResultDiv = document.createElement('div');
+            qaResultDiv.id = 'qa-result-display';
+            qaResultDiv.style.cssText = 'margin-top: 20px; padding: 20px; border-radius: 12px; font-weight: 600; text-align: center;';
+            formCard.appendChild(qaResultDiv);
+        }
+
         const modal = document.getElementById('result-modal');
         const icon = document.getElementById('modal-icon');
         const title = document.getElementById('modal-title');
@@ -94,6 +108,14 @@ const app = {
             lender.innerText = data.matched_lender;
             amount.style.display = 'block';
             amount.innerText = `₹${data.approved_amount.toLocaleString('en-IN')}`;
+            
+            // QA Automation: Update visible result
+            qaResultDiv.style.backgroundColor = '#E3F9E5';
+            qaResultDiv.style.color = '#00C853';
+            qaResultDiv.innerHTML = `✅ APPROVED<br>Lender: ${data.matched_lender}<br>Amount: ₹${data.approved_amount.toLocaleString('en-IN')}`;
+            qaResultDiv.setAttribute('data-status', 'APPROVED');
+            qaResultDiv.setAttribute('data-lender', data.matched_lender);
+            qaResultDiv.setAttribute('data-amount', data.approved_amount);
         } else if (type === 'fail') {
             icon.innerHTML = '<i class="fa-solid fa-times"></i>';
             icon.style.background = '#FFEBEE';
@@ -102,6 +124,13 @@ const app = {
             message.innerText = data.rejection_reason || 'Criteria not met';
             lender.style.display = 'none';
             amount.style.display = 'none';
+            
+            // QA Automation: Update visible result
+            qaResultDiv.style.backgroundColor = '#FFEBEE';
+            qaResultDiv.style.color = '#FF3D00';
+            qaResultDiv.innerHTML = `❌ REJECTED<br>Reason: ${data.rejection_reason || 'Criteria not met'}`;
+            qaResultDiv.setAttribute('data-status', 'REJECTED');
+            qaResultDiv.setAttribute('data-reason', data.rejection_reason || 'Criteria not met');
         } else {
             icon.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i>';
             icon.style.background = '#FFF3E0';
@@ -110,6 +139,12 @@ const app = {
             message.innerText = 'Something went wrong. Please try again.';
             lender.style.display = 'none';
             amount.style.display = 'none';
+            
+            // QA Automation: Update visible result
+            qaResultDiv.style.backgroundColor = '#FFF3E0';
+            qaResultDiv.style.color = '#FF9800';
+            qaResultDiv.innerHTML = `⚠️ ERROR<br>Message: Something went wrong`;
+            qaResultDiv.setAttribute('data-status', 'ERROR');
         }
 
         modal.classList.add('active');
