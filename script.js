@@ -1,18 +1,23 @@
 const app = {
     init: () => {
         console.log("VetKad Fincons Initialized");
-        
-        // Force enable all form fields on load (fixes browser cache/restore issues)
-        const form = document.getElementById('eligibility-form');
-        if (form) {
-            Array.from(form.elements).forEach(el => el.disabled = false);
-        }
-        const btn = document.querySelector('.btn-primary');
-        if (btn) btn.disabled = false;
-
+        app.enableFormFields();
         app.setupCalculators();
         app.setupForm();
         app.setupModalBackdrop();
+    },
+
+    enableFormFields: () => {
+        const fields = document.querySelectorAll('#eligibility-form input, #eligibility-form select');
+        fields.forEach(field => {
+            field.disabled = false;
+            field.removeAttribute('disabled');
+        });
+        const btn = document.querySelector('.btn-primary');
+        if (btn) {
+            btn.disabled = false;
+            btn.removeAttribute('disabled');
+        }
     },
 
     setupModalBackdrop: () => {
@@ -48,18 +53,10 @@ const app = {
         if (btn.disabled) return;
         
         const originalText = btn.innerHTML;
-        const form = document.getElementById('eligibility-form');
 
         try {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
             btn.disabled = true;
-
-            // Disable form to prevent changes during submission
-            if (form) {
-                Array.from(form.elements).forEach(el => {
-                    if (el !== btn) el.disabled = true;
-                });
-            }
 
             // Safely get values with null checks
             const getVal = (id) => document.getElementById(id)?.value || '';
@@ -150,11 +147,7 @@ const app = {
         } finally {
             btn.innerHTML = originalText;
             btn.disabled = false;
-            
-            // Re-enable form
-            if (form) {
-                Array.from(form.elements).forEach(el => el.disabled = false);
-            }
+            app.enableFormFields();
         }
     },
 
