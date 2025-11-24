@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vetkad Fincons - Smart Personal Loans</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Optional: Load config.js for environment-specific settings (not tracked in git) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="config.js"></script>
 </head>
+
 <body>
 
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="container">
+        <div class="container nav-container">
             <div class="logo">
-                <i class="fa-solid fa-chart-line"></i> Vetkad Fincons
+                <div class="logo-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span class="logo-text">Vetkad Fincons</span>
             </div>
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#calculators">Calculators</a>
                 <a href="#eligibility">Eligibility</a>
                 <a href="#contact" class="btn-nav">Talk to Expert</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
             </div>
         </div>
     </nav>
@@ -31,40 +37,70 @@
     <header class="hero">
         <div class="container hero-content">
             <div class="hero-text">
-                <h1>Get Your <span>Personal Loan</span><br>Up to ₹50 Lakhs</h1>
-                <p class="subheadline">Experience the future of lending with instant eligibility checks and transparent terms.</p>
-                <ul class="hero-points">
-                    <li><i class="fa-solid fa-check-circle"></i> CIBIL Inclusive (675+ & New-to-Credit)</li>
-                    <li><i class="fa-solid fa-check-circle"></i> Zero Foreclosure Charges Available</li>
-                    <li><i class="fa-solid fa-check-circle"></i> Balance Transfer with Top-up</li>
-                </ul>
+                <div class="badge-pill"><i class="fa-solid fa-bolt"></i> Instant Approval</div>
+                <h1>Unlock Your Dreams with <span class="gradient-text">Smart Lending</span></h1>
+                <p class="subheadline">Get up to ₹50 Lakhs with zero foreclosure charges and seamless digital
+                    processing.</p>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-val">675+</span>
+                        <span class="stat-label">CIBIL Accepted</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-val">24h</span>
+                        <span class="stat-label">Disbursal</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-val">10.5%</span>
+                        <span class="stat-label">Starting ROI</span>
+                    </div>
+                </div>
             </div>
-            
-            <div class="hero-form" id="lead-form">
-                <div class="form-card">
-                    <h3><i class="fa-solid fa-calculator"></i> Check Eligibility</h3>
+
+            <div class="hero-form-wrapper" id="lead-form">
+                <div class="glass-card form-card">
+                    <div class="card-header">
+                        <h3>Check Eligibility</h3>
+                        <p>No impact on credit score</p>
+                    </div>
                     <form id="eligibility-form">
                         <div class="form-group">
                             <label>Full Name</label>
-                            <input type="text" id="full_name" placeholder="e.g. John Doe" required>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input type="text" id="full_name" placeholder="John Doe" required>
+                            </div>
                         </div>
-                        <div class="form-row">
+
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label>Mobile Number</label>
-                                <input type="tel" id="phone" placeholder="e.g. 9876543210" required>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="phone" placeholder="98765 43210" required>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Age</label>
-                                <input type="number" id="age" placeholder="e.g. 28" required>
+                                <input type="number" id="age" placeholder="28" required>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label>Desired Amount (₹)</label>
-                            <input type="number" id="amount" placeholder="e.g. 500000" min="50000" max="5000000" required>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-indian-rupee-sign input-icon"></i>
+                                <input type="number" id="amount" placeholder="5,00,000" min="50000" max="5000000"
+                                    required>
+                            </div>
                         </div>
-                        <div class="form-row">
+
+                        <div class="form-grid">
                             <div class="form-group">
-                                <label>Tenure (Months)</label>
+                                <label>Tenure</label>
                                 <select id="tenure" required>
                                     <option value="12">12 Months</option>
                                     <option value="24">24 Months</option>
@@ -72,8 +108,6 @@
                                     <option value="48">48 Months</option>
                                     <option value="60" selected>60 Months</option>
                                     <option value="72">72 Months</option>
-                                    <option value="84">84 Months</option>
-                                    <option value="96">96 Months</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -86,10 +120,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-row">
+
+                        <div class="form-grid">
                             <div class="form-group">
-                                <label>Net Monthly Salary (₹)</label>
-                                <input type="number" id="salary" placeholder="e.g. 35000" required>
+                                <label>Net Monthly Salary</label>
+                                <input type="number" id="salary" placeholder="35000" required>
                             </div>
                             <div class="form-group">
                                 <label>Salary Mode</label>
@@ -100,102 +135,165 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-row">
+
+                        <div class="form-grid">
                             <div class="form-group">
-                                <label>Current Total EMIs (₹)</label>
-                                <input type="number" id="emis" placeholder="e.g. 5000" value="0">
+                                <label>Current EMIs</label>
+                                <input type="number" id="emis" placeholder="0" value="0">
                             </div>
                             <div class="form-group">
-                                <label>Total Outstanding Loans (₹)</label>
-                                <input type="number" id="obligations" placeholder="e.g. 200000" value="0">
+                                <label>Outstanding Loans</label>
+                                <input type="number" id="obligations" placeholder="0" value="0">
                             </div>
                         </div>
-                        <div class="form-row">
+
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label>CIBIL Score</label>
-                                <input type="number" id="cibil" placeholder="e.g. 750" required>
+                                <input type="number" id="cibil" placeholder="750" required>
                             </div>
                             <div class="form-group">
                                 <label>Pincode</label>
-                                <input type="text" id="pincode" placeholder="e.g. 600001" required>
+                                <input type="text" id="pincode" placeholder="600001" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn-primary">
-                            Check Now <i class="fa-solid fa-paper-plane"></i>
+
+                        <button type="submit" class="btn-primary btn-block">
+                            Check Eligibility <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+
+        <!-- Background Elements -->
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
     </header>
 
-    <!-- Result Modal (Hidden by default) -->
-    <div class="modal-overlay" id="result-modal">
-        <div class="result-card">
-            <div class="result-icon" id="modal-icon">
-                <i class="fa-solid fa-check"></i>
+    <!-- Features Section -->
+    <section id="features" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose Vetkad?</h2>
+                <p>We simplify the lending process with technology and transparency.</p>
             </div>
-            <h2 id="modal-title">Congratulations!</h2>
-            <p id="modal-message">You are eligible for a loan from</p>
-            
-            <div class="lender-badge" id="modal-lender">HDFC Bank</div>
-            
-            <div class="amount-display" id="modal-amount">₹5,00,000</div>
-            
-            <button class="btn-close" onclick="closeModal()">Close</button>
-        </div>
-    </div>
 
-    <!-- Calculators Section -->
-    <section id="calculators" class="container" style="padding: 4rem 24px;">
-        <div class="form-card" style="text-align: center; max-width: 100%;">
-            <h2 style="color: var(--primary); margin-bottom: 2rem;">Financial Tools</h2>
-            <div class="form-row">
-                <!-- EMI Calculator -->
-                <div style="flex: 1; text-align: left;">
-                    <h3><i class="fa-solid fa-calculator"></i> EMI Calculator</h3>
-                    <div class="form-group">
-                        <label>Loan Amount</label>
-                        <input type="number" id="emi-amount" value="500000">
-                    </div>
-                    <div class="form-group">
-                        <label>Tenure (Years)</label>
-                        <input type="number" id="emi-tenure" value="5">
-                    </div>
-                    <div class="form-group">
-                        <label>Interest Rate (%)</label>
-                        <input type="number" id="emi-rate" value="10.5">
-                    </div>
-                    <h4 id="emi-output" style="font-size: 1.5rem; color: var(--primary); margin-top: 1rem;">₹10,747 / mo</h4>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon icon-blue"><i class="fa-solid fa-user-check"></i></div>
+                    <h3>Inclusive Criteria</h3>
+                    <p>Loans for CIBIL 675+ and New-to-Credit customers.</p>
                 </div>
-
-                <!-- BT Calculator -->
-                <div style="flex: 1; text-align: left; border-left: 1px solid #eee; padding-left: 2rem;">
-                    <h3><i class="fa-solid fa-percent"></i> Balance Transfer Saver</h3>
-                    <div class="form-group">
-                        <label>Outstanding Amount</label>
-                        <input type="number" id="bt-amount" value="500000">
-                    </div>
-                    <div class="form-group">
-                        <label>Current Rate (%)</label>
-                        <input type="number" id="bt-old-rate" value="14">
-                    </div>
-                    <div class="form-group">
-                        <label>New Rate (%)</label>
-                        <input type="number" id="bt-new-rate" value="10.5">
-                    </div>
-                    <h4 id="bt-output" style="font-size: 1.5rem; color: var(--accent); margin-top: 1rem;">Save ₹50,000+</h4>
+                <div class="feature-card">
+                    <div class="feature-icon icon-green"><i class="fa-solid fa-percent"></i></div>
+                    <h3>Zero Foreclosure</h3>
+                    <p>No charges for early closure after 12 EMIs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon icon-purple"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                    <h3>Balance Transfer</h3>
+                    <p>Reduce your EMI burden with our BT + Top-up facility.</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Calculators Section -->
+    <section id="calculators" class="section-padding bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Smart Financial Tools</h2>
+                <p>Plan your finances with our easy-to-use calculators.</p>
+            </div>
+
+            <div class="calculators-wrapper">
+                <!-- EMI Calculator -->
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <div class="calc-icon"><i class="fa-solid fa-calculator"></i></div>
+                        <h3>EMI Calculator</h3>
+                    </div>
+                    <div class="calc-body">
+                        <div class="range-group">
+                            <label>Loan Amount</label>
+                            <input type="number" id="emi-amount" value="500000" class="modern-input">
+                        </div>
+                        <div class="range-group">
+                            <label>Tenure (Years)</label>
+                            <input type="number" id="emi-tenure" value="5" class="modern-input">
+                        </div>
+                        <div class="range-group">
+                            <label>Interest Rate (%)</label>
+                            <input type="number" id="emi-rate" value="10.5" class="modern-input">
+                        </div>
+                        <div class="calc-result">
+                            <span>Monthly EMI</span>
+                            <h4 id="emi-output">₹10,747</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BT Calculator -->
+                <div class="calculator-card highlight-card">
+                    <div class="calc-header">
+                        <div class="calc-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                        <h3>Balance Transfer Saver</h3>
+                    </div>
+                    <div class="calc-body">
+                        <div class="range-group">
+                            <label>Outstanding Amount</label>
+                            <input type="number" id="bt-amount" value="500000" class="modern-input">
+                        </div>
+                        <div class="range-group">
+                            <label>Current Rate (%)</label>
+                            <input type="number" id="bt-old-rate" value="14" class="modern-input">
+                        </div>
+                        <div class="range-group">
+                            <label>New Rate (%)</label>
+                            <input type="number" id="bt-new-rate" value="10.5" class="modern-input">
+                        </div>
+                        <div class="calc-result">
+                            <span>Total Savings</span>
+                            <h4 id="bt-output" class="text-success">Save ₹50,000+</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal-content glass-card">
+            <button class="btn-close-icon" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="result-icon-wrapper" id="modal-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 id="modal-title">Congratulations!</h2>
+            <p id="modal-message">You are eligible for a loan from</p>
+
+            <div class="lender-badge" id="modal-lender">HDFC Bank</div>
+
+            <div class="amount-wrapper">
+                <span class="amount-label">Approved Amount</span>
+                <div class="amount-display" id="modal-amount">₹5,00,000</div>
+            </div>
+
+            <button class="btn-primary btn-block" onclick="closeModal()">Proceed to Apply</button>
+        </div>
+    </div>
+
     <footer>
-        <div class="container" style="text-align: center; padding: 2rem 0; color: var(--text-light);">
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-chart-line"></i> Vetkad Fincons
+            </div>
             <p>&copy; 2025 Vetkad Fincons. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="script.js?v=1.1"></script>
+    <script src="script.js?v=2.0"></script>
 </body>
+
 </html>

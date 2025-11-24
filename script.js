@@ -1,18 +1,19 @@
 const app = {
     init: () => {
         console.log("VetKad Fincons Initialized");
-        
+
         // Force display:none on modal at start
         const modal = document.getElementById('result-modal');
-        if(modal) {
+        if (modal) {
             modal.classList.remove('active');
             modal.style.display = 'none';
         }
-        
+
         app.enableFormFields();
         app.setupCalculators();
         app.setupForm();
         app.setupModalBackdrop();
+        app.setupMobileMenu();
     },
 
     enableFormFields: () => {
@@ -25,6 +26,32 @@ const app = {
         if (btn) {
             btn.disabled = false;
             btn.removeAttribute('disabled');
+        }
+    },
+
+    setupMobileMenu: () => {
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', () => {
+                const isFlex = navLinks.style.display === 'flex';
+                navLinks.style.display = isFlex ? 'none' : 'flex';
+
+                // Simple mobile menu style injection if not in CSS (or rely on CSS class toggle if preferred)
+                if (!isFlex) {
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '100%';
+                    navLinks.style.left = '0';
+                    navLinks.style.width = '100%';
+                    navLinks.style.background = 'white';
+                    navLinks.style.padding = '1rem';
+                    navLinks.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                } else {
+                    navLinks.style.display = ''; // Revert to CSS
+                }
+            });
         }
     },
 
@@ -56,10 +83,10 @@ const app = {
             console.error('Submit button not found');
             return;
         }
-        
+
         // Prevent double submission
         if (btn.disabled) return;
-        
+
         const originalText = btn.innerHTML;
 
         try {
@@ -68,9 +95,9 @@ const app = {
 
             // Safely get values with null checks
             const getVal = (id) => document.getElementById(id)?.value || '';
-            
+
             const amount = parseFloat(getVal('amount')) || 0;
-            const tenure = parseFloat(getVal('tenure')) || 0; 
+            const tenure = parseFloat(getVal('tenure')) || 0;
             const salary = parseFloat(getVal('salary')) || 0;
             const cibil = parseFloat(getVal('cibil')) || 0;
             const full_name = getVal('full_name');
@@ -119,7 +146,7 @@ const app = {
             // Use environment-based configuration (secure approach)
             const SUPABASE_URL = window.SUPABASE_URL || "https://icammcswodhsjmthwwwh.supabase.co";
             const SUPABASE_KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljYW1tY3N3b2Roc2ptdGh3d3doIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MjIyODcsImV4cCI6MjA3OTI5ODI4N30.4P3iQXWGIpIhp-vk3ijOk9E64SBurByCQxTvdttATrc";
-            
+
             const response = await fetch(`${SUPABASE_URL}/functions/v1/check-eligibility`, {
                 method: 'POST',
                 headers: {
@@ -166,7 +193,7 @@ const app = {
             console.error('Form card not found');
             return;
         }
-        
+
         let qaResultDiv = document.getElementById('qa-result-display');
         if (!qaResultDiv) {
             qaResultDiv = document.createElement('div');
@@ -188,7 +215,7 @@ const app = {
         const message = document.getElementById('modal-message');
         const lender = document.getElementById('modal-lender');
         const amount = document.getElementById('modal-amount');
-        
+
         if (!modal || !icon || !title || !message || !lender || !amount) {
             console.error('Required modal elements not found');
             return;
@@ -204,7 +231,7 @@ const app = {
             lender.textContent = data.matched_lender || 'N/A';
             amount.style.display = 'block';
             amount.textContent = `₹${(data.approved_amount || 0).toLocaleString('en-IN')}`;
-            
+
             // QA Automation: Update visible result (use textContent to prevent XSS)
             qaResultDiv.style.backgroundColor = '#E3F9E5';
             qaResultDiv.style.color = '#00C853';
@@ -220,7 +247,7 @@ const app = {
             message.textContent = data.rejection_reason || 'Criteria not met';
             lender.style.display = 'none';
             amount.style.display = 'none';
-            
+
             // QA Automation: Update visible result (use textContent to prevent XSS)
             qaResultDiv.style.backgroundColor = '#FFEBEE';
             qaResultDiv.style.color = '#FF3D00';
@@ -235,7 +262,7 @@ const app = {
             message.textContent = data?.error_message || 'Something went wrong. Please try again.';
             lender.style.display = 'none';
             amount.style.display = 'none';
-            
+
             // QA Automation: Update visible result (use textContent to prevent XSS)
             qaResultDiv.style.backgroundColor = '#FFF3E0';
             qaResultDiv.style.color = '#FF9800';
@@ -272,9 +299,9 @@ const app = {
         const emiRateEl = document.getElementById('emi-rate');
         const emiTenureEl = document.getElementById('emi-tenure');
         const emiOutputEl = document.getElementById('emi-output');
-        
+
         if (!emiAmountEl || !emiRateEl || !emiTenureEl || !emiOutputEl) return;
-        
+
         const P = parseFloat(emiAmountEl.value) || 0;
         const R = parseFloat(emiRateEl.value) || 0;
         const N = parseFloat(emiTenureEl.value) * 12 || 0;
@@ -282,21 +309,21 @@ const app = {
         if (P > 0 && R > 0 && N > 0) {
             const r = R / 12 / 100;
             const denominator = Math.pow(1 + r, N) - 1;
-            
+
             // Check for division by zero
             if (denominator === 0) {
                 emiOutputEl.textContent = 'Invalid calculation';
                 return;
             }
-            
+
             const emi = P * r * (Math.pow(1 + r, N) / denominator);
-            
+
             // Validate result
             if (!isFinite(emi) || isNaN(emi)) {
                 emiOutputEl.textContent = 'Invalid result';
                 return;
             }
-            
+
             emiOutputEl.textContent = `₹${Math.round(emi).toLocaleString('en-IN')} / mo`;
         } else {
             emiOutputEl.textContent = '₹0 / mo';
@@ -308,9 +335,9 @@ const app = {
         const btOldRateEl = document.getElementById('bt-old-rate');
         const btNewRateEl = document.getElementById('bt-new-rate');
         const btOutputEl = document.getElementById('bt-output');
-        
+
         if (!btAmountEl || !btOldRateEl || !btNewRateEl || !btOutputEl) return;
-        
+
         const P = parseFloat(btAmountEl.value) || 0;
         const R1 = parseFloat(btOldRateEl.value) || 0;
         const R2 = parseFloat(btNewRateEl.value) || 0;
@@ -329,7 +356,7 @@ const app = {
 // Global function for modal close button
 window.closeModal = () => {
     const modal = document.getElementById('result-modal');
-    if(modal) {
+    if (modal) {
         modal.classList.remove('active');
         modal.style.display = 'none';
     }
